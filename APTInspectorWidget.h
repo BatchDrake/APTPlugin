@@ -50,6 +50,8 @@ SUBOOL DecoderUI_onLineData(
 struct APTInspectorWidgetConfig : public Suscan::Serializable {
   bool falseColor = true;
   int  channel = 0;
+  std::string palette = "Inferno (Feely)";
+  std::string saveDir = ".";
   void deserialize(Suscan::Object const &conf) override;
   Suscan::Object &&serialize() override;
 };
@@ -71,8 +73,8 @@ class APTInspectorWidget : public SigDigger::InspectionWidget
 
     void adjustScrollbar();
     void flashLed(KLed *, unsigned int ms);
-    void ensureMapArea(void);
-    void connectUi(void);
+    void ensureMapArea();
+    void connectUi();
     void feed(const SUCOMPLEX *data, size_t len);
     void destroyDecoder();
     bool createDecoder();
@@ -112,15 +114,16 @@ class APTInspectorWidget : public SigDigger::InspectionWidget
     void samplesMessage(Suscan::SamplesMessage const &) override;
 
   public slots:
-    void onLedTimeout(void);
-    void onChannelChanged(void);
-    void onSNRChanged(void);
-    void onScroll(void);
-    void onSave(void);
-    void onReset(void);
-    void onGeometryChanged(void);
+    void onLedTimeout();
+    void onChannelChanged();
+    void onSNRChanged();
+    void onScroll();
+    void onSave();
+    void onReset();
+    void onGeometryChanged();
     void onOffsetChanged(int);
-    void onFalseColorToggled(void);
+    void onFalseColorToggled();
+    void onPaletteChanged();
 
   private:
     Ui::DecoderUI *ui;

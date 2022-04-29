@@ -281,6 +281,43 @@ static float inferno_cmap[256][3] = {
 };
 
 void
+MapWidget::recalcFalseColor()
+{
+  size_t fullSize = this->channelAdata.size();
+  unsigned int i;
+  const uint8_t *dataA, *dataB;
+
+  dataA = this->channelAdata.data();
+  dataB = this->channelBdata.data();
+
+  for (i = 0; i < fullSize; ++i) {
+    int r, g, b;
+    int thermal;
+    int reflect, refcol;
+
+    thermal = 255 - dataB[i];
+    reflect = dataA[i];
+
+    thermal = (thermal * thermal * thermal) / (255 * 255);
+    refcol = sqrt(reflect / 255.) * 255;
+
+    r = qBound(0,
+               refcol + ((255 - reflect) * qRed(this->colormap[thermal])) / 255,
+               255);
+
+    g = qBound(0,
+               refcol + ((255 - reflect) * qGreen(this->colormap[thermal])) / 255,
+               255);
+
+    b = qBound(0,
+               refcol + ((255 - reflect) * qBlue(this->colormap[thermal])) / 255,
+               255);
+
+    this->falseColorData[i] = qRgb(r, g, b);
+  }
+}
+
+void
 MapWidget::pushLine(
     MapWidget::Channel ch, const uint8_t *data, size_t size, bool)
 {
@@ -353,6 +390,20 @@ MapWidget::pushLine(
 
     this->redrawChannels();
   }
+}
+
+void
+MapWidget::setGradient(QColor const *gradient)
+{
+  unsigned int i;
+
+  for (i = 0; i < 256; ++i)
+    this->colormap[i] = gradient[i].rgb();
+
+  this->recalcFalseColor();
+
+  if (this->falseColor)
+    this->redrawFalseColor();
 }
 
 void

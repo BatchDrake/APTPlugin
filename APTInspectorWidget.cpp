@@ -17,11 +17,12 @@
 //    <http://www.gnu.org/licenses/>
 //
 #include "APTInspectorWidget.h"
-#include "ui_DecoderUI.h"
+#include "ui_APTInspectorWidget.h"
 #include <QFileDialog>
 #include <analyzer/inspector/params.h>
 #include <SuWidgetsHelpers.h>
 #include <QMessageBox>
+#include <SigDiggerHelpers.h>
 
 #define STRINGFY(x) #x
 #define STORE(field) obj.set(STRINGFY(field), this->field)
@@ -33,6 +34,8 @@ APTInspectorWidgetConfig::deserialize(Suscan::Object const &conf)
 {
   LOAD(falseColor);
   LOAD(channel);
+  LOAD(palette);
+  LOAD(saveDir);
 }
 
 Suscan::Object &&
@@ -44,6 +47,8 @@ APTInspectorWidgetConfig::serialize(void)
 
   STORE(falseColor);
   STORE(channel);
+  STORE(palette);
+  STORE(saveDir);
 
   return this->persist(obj);
 }
@@ -143,6 +148,8 @@ APTInspectorWidget::ensureMapArea(void)
     m_mapArea = new MapWidget(this);
     index = this->ui->mapStack->addWidget(m_mapArea);
     this->ui->mapStack->setCurrentIndex(index);
+
+    this->onPaletteChanged();
 
     if (this->ui->channelAButton->isChecked())
       m_mapArea->setCurrentChannel(MapWidget::MAP_WIDGET_CHANNEL_A);
@@ -244,6 +251,12 @@ APTInspectorWidget::connectUi(void)
         SIGNAL(valueChanged(int)),
         this,
         SLOT(onScroll()));
+
+  connect(
+        this->ui->paletteCombo,
+        SIGNAL(activated(int)),
+        this,
+        SLOT(onPaletteChanged()));
 }
 
 //////////////////////////// External API /////////////////////////////////////
@@ -262,6 +275,9 @@ APTInspectorWidget::APTInspectorWidget(
   ui(new Ui::DecoderUI)
 {
   ui->setupUi(this);
+
+  SigDigger::SigDiggerHelpers::instance()->populatePaletteCombo(
+        this->ui->paletteCombo);
 
   this->connectUi();
 }
@@ -284,9 +300,20 @@ APTInspectorWidget::allocConfig()
 void
 APTInspectorWidget::applyConfig()
 {
-  this->ui->falseColorCheck->setChecked(m_widgetConfig->falseColor);
+  int index;
+
   this->ui->channelAButton->setChecked(m_widgetConfig->channel == 0);
   this->ui->channelBButton->setChecked(m_widgetConfig->channel == 1);
+
+  this->ui->falseColorCheck->setChecked(m_widgetConfig->falseColor);
+
+  index = this->ui->paletteCombo->findText(
+        QString::fromStdString(m_widgetConfig->palette));
+  if (index != -1)
+    this->ui->paletteCombo->setCurrentIndex(index);
+
+  this->onFalseColorToggled();
+  this->onPaletteChanged();
 }
 
 // Overridable methods
@@ -482,11 +509,14 @@ APTInspectorWidget::onSave(void)
   fileName = QFileDialog::getSaveFileName(
         this,
         "Save file",
-        ".",
+        QString::fromStdString(m_widgetConfig->saveDir),
         "Image files (*.png)");
 
-  if (fileName.size() > 0 && m_mapArea != nullptr)
+  if (fileName.size() > 0 && m_mapArea != nullptr) {
+    QFileInfo fi(fileName);
+    m_widgetConfig->saveDir = fi.absolutePath().toStdString();
     m_mapArea->saveTo(fileName);
+  }
 }
 
 void
@@ -508,6 +538,23 @@ APTInspectorWidget::onOffsetChanged(int val)
 }
 
 void
+APTInspectorWidget::onPaletteChanged()
+{
+  int index = this->ui->paletteCombo->currentIndex();
+
+  if (index != -1) {
+    const QColor *gradient =
+        SigDigger::SigDiggerHelpers::instance()->getPalette(index)->getGradient();
+
+    if (gradient != nullptr && m_mapArea != nullptr) {
+      m_mapArea->setGradient(gradient);
+      m_widgetConfig->palette =
+          this->ui->paletteCombo->currentText().toStdString();
+    }
+  }
+}
+
+void
 APTInspectorWidget::onFalseColorToggled()
 {
   bool falseColor = this->ui->falseColorCheck->isChecked();
@@ -519,4 +566,6 @@ APTInspectorWidget::onFalseColorToggled()
   this->ui->channelBButton->setEnabled(!falseColor);
 
   m_widgetConfig->falseColor = falseColor;
+
+  this->ui->paletteCombo->setEnabled(falseColor);
 }

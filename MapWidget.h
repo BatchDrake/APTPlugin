@@ -53,6 +53,7 @@ class MapWidget : public QWidget
     void redrawChannel(Channel);
     void redrawChannels();
     void redrawFalseColor();
+    void recalcFalseColor();
 
     std::vector<uint8_t> *getData(void);
     const std::vector<uint8_t> *getData(void) const;
@@ -64,6 +65,8 @@ class MapWidget : public QWidget
     explicit MapWidget(QWidget *parent = 0);
 
     void pushLine(Channel, const uint8_t *, size_t, bool highsnr = true);
+
+    void setGradient(QColor const *gradient);
 
     void setFalseColorEnabled(bool);
     bool isFalseColorEnabled(void) const;
