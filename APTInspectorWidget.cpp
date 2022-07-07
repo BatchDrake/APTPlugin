@@ -478,10 +478,12 @@ APTInspectorWidget::onChannelChanged(void)
 
   m_widgetConfig->channel = channel;
 
-  if (channel == 0)
-    m_mapArea->setCurrentChannel(MapWidget::MAP_WIDGET_CHANNEL_A);
-  else
-    m_mapArea->setCurrentChannel(MapWidget::MAP_WIDGET_CHANNEL_B);
+  if (m_mapArea != nullptr) {
+    if (channel == 0)
+      m_mapArea->setCurrentChannel(MapWidget::MAP_WIDGET_CHANNEL_A);
+    else
+      m_mapArea->setCurrentChannel(MapWidget::MAP_WIDGET_CHANNEL_B);
+  }
 
   this->update();
 }
