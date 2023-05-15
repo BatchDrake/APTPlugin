@@ -30,7 +30,7 @@
 #define DECODER_PREFERRED_SAMPLE_RATE 44100
 #define DECODER_AUDIO_CUTOFF          9000
 
-class KLed;
+class LED;
 
 namespace Ui {
   class DecoderUI;
@@ -72,7 +72,7 @@ class APTInspectorWidget : public SigDigger::InspectionWidget
     QTimer channelBTimer;
 
     void adjustScrollbar();
-    void flashLed(KLed *, unsigned int ms);
+    void flashLed(LED *, unsigned int ms);
     void ensureMapArea();
     void connectUi();
     void feed(const SUCOMPLEX *data, size_t len);

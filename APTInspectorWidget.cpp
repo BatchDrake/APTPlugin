@@ -69,10 +69,7 @@ DecoderUI_onCarrier(struct sigutils_apt_decoder *, void *userdata, SUFLOAT snr)
 {
   APTInspectorWidget *ui = reinterpret_cast<APTInspectorWidget *>(userdata);
 
-  ui->ui->carrierLed->setState(
-        snr > SU_APT_MIN_CARRIER_DB
-        ? KLed::On
-        : KLed::Off);
+  ui->ui->carrierLed->setOn(snr > SU_APT_MIN_CARRIER_DB);
 
   return SU_TRUE;
 }
@@ -174,7 +171,7 @@ APTInspectorWidget::ensureMapArea(void)
 }
 
 void
-APTInspectorWidget::flashLed(KLed *led, unsigned int ms)
+APTInspectorWidget::flashLed(LED *led, unsigned int ms)
 {
   QTimer *timer = nullptr;
 
@@ -188,8 +185,8 @@ APTInspectorWidget::flashLed(KLed *led, unsigned int ms)
   if (timer != nullptr) {
     timer->setSingleShot(true);
     timer->setInterval(ms);
-    timer->setProperty("led", QVariant::fromValue<KLed *>(led));
-    led->setState(KLed::On);
+    timer->setProperty("led", QVariant::fromValue<LED *>(led));
+    led->setOn(true);
     timer->start();
   }
 }
@@ -465,9 +462,9 @@ void
 APTInspectorWidget::onLedTimeout(void)
 {
   QTimer *sender = static_cast<QTimer *>(QObject::sender());
-  KLed *led = sender->property("led").value<KLed *>();
+  LED *led = sender->property("led").value<LED *>();
 
-  led->setState(KLed::Off);
+  led->setOn(false);
 }
 
 void

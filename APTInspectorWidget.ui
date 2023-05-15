@@ -29,23 +29,6 @@
    <property name="spacing">
     <number>3</number>
    </property>
-   <item row="8" column="2">
-    <widget class="KLed" name="carrierLed">
-     <property name="state">
-      <enum>KLed::Off</enum>
-     </property>
-     <property name="look">
-      <enum>KLed::Sunken</enum>
-     </property>
-     <property name="color">
-      <color>
-       <red>239</red>
-       <green>41</green>
-       <blue>41</blue>
-      </color>
-     </property>
-    </widget>
-   </item>
    <item row="1" column="2" colspan="2">
     <widget class="QLabel" name="label_5">
      <property name="text">
@@ -115,29 +98,6 @@
      </attribute>
     </widget>
    </item>
-   <item row="11" column="2">
-    <widget class="KLed" name="channelBLed">
-     <property name="state">
-      <enum>KLed::Off</enum>
-     </property>
-     <property name="look">
-      <enum>KLed::Sunken</enum>
-     </property>
-     <property name="darkFactor">
-      <number>300</number>
-     </property>
-    </widget>
-   </item>
-   <item row="10" column="2">
-    <widget class="KLed" name="channelALed">
-     <property name="state">
-      <enum>KLed::Off</enum>
-     </property>
-     <property name="look">
-      <enum>KLed::Sunken</enum>
-     </property>
-    </widget>
-   </item>
    <item row="13" column="2" colspan="2">
     <widget class="QPushButton" name="saveButton">
      <property name="text">
@@ -163,23 +123,6 @@
     <widget class="QLabel" name="label_2">
      <property name="text">
       <string>Channel A</string>
-     </property>
-    </widget>
-   </item>
-   <item row="9" column="2">
-    <widget class="KLed" name="syncLed">
-     <property name="state">
-      <enum>KLed::Off</enum>
-     </property>
-     <property name="look">
-      <enum>KLed::Sunken</enum>
-     </property>
-     <property name="color">
-      <color>
-       <red>255</red>
-       <green>223</green>
-       <blue>0</blue>
-      </color>
      </property>
     </widget>
    </item>
@@ -299,13 +242,37 @@
      </property>
     </widget>
    </item>
+   <item row="8" column="2">
+    <widget class="LED" name="carrierLed"/>
+   </item>
+   <item row="9" column="2">
+    <widget class="LED" name="syncLed">
+     <property name="color">
+      <enum>LED::Yellow</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="2">
+    <widget class="LED" name="channelALed">
+     <property name="color">
+      <enum>LED::Green</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="2">
+    <widget class="LED" name="channelBLed">
+     <property name="color">
+      <enum>LED::Green</enum>
+     </property>
+    </widget>
+   </item>
   </layout>
  </widget>
  <customwidgets>
   <customwidget>
-   <class>KLed</class>
+   <class>LED</class>
    <extends>QWidget</extends>
-   <header>kled.h</header>
+   <header>LED.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

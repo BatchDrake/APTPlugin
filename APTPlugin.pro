@@ -1,9 +1,19 @@
-QT += core widgets gui KWidgetsAddons
+QT += core widgets gui
 
 TEMPLATE = lib
 DEFINES += APTPLUGIN_LIBRARY
 
 CONFIG += c++11
+CONFIG += unversioned_libname unversioned_soname
+
+isEmpty(PLUGIN_DIRECTORY) {
+  _HOME = $$(HOME)
+  isEmpty(_HOME) {
+    error(Cannot deduce user home directory. Please provide a valid plugin installation path through the PLUGIN_DIRECTORY property)
+  }
+
+  PLUGIN_DIRECTORY=$$_HOME/.suscan/plugins
+}
 
 isEmpty(SUWIDGETS_PREFIX) {
   SUWIDGETS_INSTALL_HEADERS=$$[QT_INSTALL_HEADERS]/SuWidgets
@@ -14,8 +24,12 @@ isEmpty(SUWIDGETS_PREFIX) {
 isEmpty(SIGDIGGER_PREFIX) {
   SIGDIGGER_INSTALL_HEADERS=$$[QT_INSTALL_HEADERS]/SigDigger
 } else {
-  SIGDIGGER_INSTALL_HEADERS=$$SIGDIGGER_PREFIX/include
+  SIGDIGGER_INSTALL_HEADERS=$$SIGDIGGER_PREFIX/include/SigDigger
 }
+
+# Default rules for deployment.
+target.path = $$PLUGIN_DIRECTORY
+!isEmpty(target.path): INSTALLS += target
 
 # You can make your code fail to compile if it uses deprecated APIs.
 # In order to do so, uncomment the following line.
@@ -32,19 +46,10 @@ HEADERS += \
     APTInspectorWidgetFactory.h \
     MapWidget.h
 
+FORMS += APTInspectorWidget.ui
+
 INCLUDEPATH += $$SUWIDGETS_INSTALL_HEADERS $$SIGDIGGER_INSTALL_HEADERS
 
 unix: CONFIG += link_pkgconfig
 unix: PKGCONFIG += suscan sigutils fftw3 alsa sndfile
 
-CONFIG += c++11
-
-
-# Default rules for deployment.
-unix {
-    target.path = /usr/lib
-}
-!isEmpty(target.path): INSTALLS += target
-
-FORMS += \
-  APTInspectorWidget.ui
