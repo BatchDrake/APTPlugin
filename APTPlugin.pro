@@ -1,4 +1,5 @@
-QT += core widgets gui
+QT += widgets gui opengl
+greaterThan(QT_MAJOR_VERSION, 5): QT += openglwidgets
 
 TEMPLATE = lib
 DEFINES += APTPLUGIN_LIBRARY
