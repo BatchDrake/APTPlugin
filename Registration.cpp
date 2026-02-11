@@ -17,7 +17,7 @@
 //    <http://www.gnu.org/licenses/>
 //
 
-#include <Suscan/Plugin.h>
+#include <Suscan/PluginSupport.h>
 #include <Suscan/Library.h>
 #include <APTInspectorWidgetFactory.h>
 
