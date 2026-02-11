@@ -25,11 +25,14 @@ SUSCAN_PLUGIN("APTInspector", "APT inspector for NOAA satellites");
 SUSCAN_PLUGIN_VERSION(0, 1, 0);
 SUSCAN_PLUGIN_API_VERSION(0, 3, 0);
 
-bool
-plugin_load(Suscan::Plugin *plugin)
+SUSCAN_PLUGIN_ENTRY(suscanPlugin)
 {
-  Suscan::Singleton *sus = Suscan::Singleton::get_instance();
-
-  return sus->registerInspectionWidgetFactory(
-        new APTInspectorWidgetFactory(plugin));
+  IF_LOADED_FROM_SIGDIGGER(plugin, suscanPlugin) {
+    Suscan::Singleton *sus = Suscan::Singleton::get_instance();
+    
+    return sus->registerInspectionWidgetFactory(
+      new APTInspectorWidgetFactory(plugin));
+  }
+  
+  return false;
 }
